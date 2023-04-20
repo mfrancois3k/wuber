@@ -1,0 +1,344 @@
+//MIXINS
+
+//1 repeat-str()
+//2 grid-child()
+//3 col-width()
+//4 col-props()
+//5 columns-loop()
+//6 grid-base()
+//7 buildGrid()
+
+// Example usage:
+
+// repeat-str(): Used to repeat a string a certain number of times.
+// .grid {
+//   grid-template-areas: repeat-str("a-block ", 3) "b-block c-block d-block";
+//   // output: grid-template-areas: "a-block a-block a-block " "b-block c-block d-block";
+// }
+
+// grid-child(): Used to set properties for grid child elements.
+// .child {
+//   @include grid-child(2, 3, 2, 3);
+// }
+
+// col-width(): Used to calculate the width of a column based on the number of columns and the index of the current column.
+// .col {
+//   width: col-width($i, $columns);
+// }
+
+// col-props(): Used to set properties for a column element.
+// .col {
+//   @include col-props($i, $columns, $gutter);
+// }
+
+// columns-loop(): Used to generate a loop of column classes based on the number of columns and gutter width.
+// .col {
+//   @include columns-loop(desk, $grid-desktop-columns, $desk-gutter);
+// }
+
+// grid-base(): Used to set properties for the grid element.
+// .grid {
+//   @include grid-base($desk-grid-width);
+// }
+
+// buildGrid(): Used to generate a grid template with a given number of rows and columns.
+// #grid-small {
+//   grid-template-areas: buildGrid(5,5);
+// }
+
+// #grid-large {
+//   grid-template-areas: buildGrid(25,25);
+// }
+
+$default-breakpoints: (
+  "sm": 576px,
+  "md": 768px,
+  "lg": 992px,
+  "xl": 1200px
+);
+
+// VARiABLES
+// desktop grid
+$grid-desktop-columns: 12;
+$grid-desktop-sideMargin: 80px;
+$grid-desktop-gutter: 40px;
+$grid-desktop-breakpoint: 1400px;
+
+// tablet grid
+$grid-tablet-columns: 12;
+$grid-tablet-sideMargin: 60px;
+$grid-tablet-gutter: 30px;
+$grid-tablet-breakpoint: 1020px;
+
+// mobile grid
+$grid-mobile-columns: 4;
+$grid-mobile-sideMargin: 32px;
+$grid-mobile-gutter: 20px;
+$grid-mobile-breakpoint: 620px;
+
+// pixels to % variables
+$desk-grid-width: 100% -
+  (($grid-desktop-sideMargin * 2 / $grid-desktop-breakpoint) * 100%);
+$tab-grid-width: 100% -
+  (($grid-tablet-sideMargin * 2 / $grid-tablet-breakpoint) * 100%);
+$mob-grid-width: 100% -
+  (($grid-mobile-sideMargin * 2 / $grid-mobile-breakpoint) * 100%);
+
+$desk-gutter: (
+  (
+      $grid-desktop-gutter /
+        ($grid-desktop-breakpoint - ($grid-desktop-sideMargin * 2))
+    ) * 100%
+);
+$tab-gutter: (
+  (
+      $grid-tablet-gutter /
+        ($grid-tablet-breakpoint - ($grid-tablet-sideMargin * 2))
+    ) * 100%
+);
+$mob-gutter: (
+  (
+      $grid-mobile-gutter /
+        ($grid-mobile-breakpoint - ($grid-mobile-sideMargin * 2))
+    ) * 100%
+);
+
+$default-gutter: 15px;
+
+// Base value for spacing
+$base-spacing: 8px;
+
+// Generating multiple spacing variables
+$spacing-xxs: $base-spacing * 0.25;
+$spacing-xs: $base-spacing * 0.5;
+$spacing-sm: $base-spacing * 0.75;
+$spacing-md: $base-spacing;
+$spacing-lg: $base-spacing * 1.5;
+$spacing-xl: $base-spacing * 2;
+$spacing-xxl: $base-spacing * 3;
+
+@mixin grid-row($gutter: $default-gutter) {
+  display: flex;
+  flex-wrap: wrap;
+  margin-left: -$gutter / 2;
+  margin-right: -$gutter / 2;
+  
+  > * {
+    box-sizing: border-box;
+    flex-shrink: 0;
+    width: 100%;
+    padding-left: $gutter / 2;
+    padding-right: $gutter / 2;
+  }
+}
+
+// usage 
+
+// .container {
+//   @include grid-row(20px);
+// } 
+//This will apply a grid row to all the direct children of 
+//.container with a gutter of 20px.
+
+@mixin grid-col($width, $gutter: $default-gutter) {
+  flex: 0 0 $width;
+  max-width: $width;
+  padding-right: $gutter / 2;
+  padding-left: $gutter / 2;
+}
+
+// usage 
+// @include grid-row;
+// @include grid-col(12);
+// @include grid-col(6);
+// This would create a row with two columns, one with a width of 12 columns
+//  and the other with a width of 6 columns.
+
+@function repeat-str($str, $times) {
+  @if $times > 0 {
+    @return $str + repeat-str($str, $times - 1);
+  }
+  @return "";
+}
+
+.grid {
+  grid-template-areas: repeat-str("a-block ", 3) "b-block c-block d-block";
+  // output: grid-template-areas: "a-block a-block a-block " "b-block c-block d-block";
+}
+
+@mixin grid-child ($col-start, $col-end, $row-start, $row-end) {
+  -ms-grid-column: $col-start;
+  -ms-grid-column-span: $col-end - $col-start;
+  -ms-grid-row: $row-start;
+  -ms-grid-row-span: $row-end - $row-start;
+  grid-column: #{$col-start}/#{$col-end};
+  grid-row: #{$row-start}/#{$row-end};
+}
+
+.child {
+  @include grid-child(2, 3, 2, 3);
+}
+
+
+
+// FUNCTIONS AND MiXINS
+@function col-width($i, $columns) {
+  @return 100% / $columns * $i;
+}
+
+@mixin col-props($i, $columns, $gutter) {
+  box-sizing: border-box;
+  width: col-width($i, $columns);
+  padding-left: $gutter/2;
+  padding-right: $gutter/2;
+}
+
+@mixin columns-loop($name, $columns, $gutter) {
+  @for $i from 0 through $columns {
+    &-#{$name}-#{$i} {
+      @include col-props($i, $columns, $gutter);
+    }
+    &-#{$name}-shift-#{$i} {
+      margin-left: col-width($i, $columns);
+    }
+  }
+}
+
+@mixin grid-base($width) {
+  box-sizing: border-box;
+  display: flex;
+  margin-left: auto;
+  margin-right: auto;
+  flex-wrap: wrap;
+  max-width: $grid-desktop-breakpoint;
+  width: $width;
+}
+
+// CLASSES
+.grid {
+  @include grid-base($desk-grid-width);
+  @media screen and (max-width: $grid-tablet-breakpoint) {
+    width: $tab-grid-width;
+  }
+  @media screen and (max-width: $grid-mobile-breakpoint) {
+    width: $mob-grid-width;
+  }
+  &-0 {
+    @include grid-base(100%);
+  }
+}
+
+.col {
+  @include columns-loop(desk, $grid-desktop-columns, $desk-gutter);
+  @media screen and (max-width: $grid-tablet-breakpoint) {
+    @include columns-loop(tab, $grid-tablet-columns, $tab-gutter);
+  }
+  @media screen and (max-width: $grid-mobile-breakpoint) {
+    @include columns-loop(mob, $grid-mobile-columns, $mob-gutter);
+  }
+}
+
+@function buildGrid($j, $i) {
+    $template: null;
+
+    @for $x from 0 to $j {
+        $string: '';
+
+        @for $y from 0 to $i {
+            @if $y > 0 { $string: $string + ' '; }
+            $string: $string + $x + "-" + $y;
+        }
+
+        $template: $template $string;
+    }
+
+  @return $template;
+}
+
+#grid-small {
+  grid-template-areas: buildGrid(5,5);
+}
+
+#grid-large {
+  grid-template-areas: buildGrid(25,25);
+}
+
+@mixin grid-system() {
+  display: flex;
+  flex-wrap: wrap;
+  margin-left: -15px;
+  margin-right: -15px;
+}
+
+@mixin gridAdvanced($align-items: null, $justify-content: null) {
+  @if $align-items {
+    align-items: $align-items;
+  }
+
+  @if $justify-content {
+    justify-content: $justify-content;
+  }
+}
+
+@mixin grid-child($width, $padding: 15px) {
+  width: $width;
+  padding-left: $padding;
+  padding-right: $padding;
+}
+
+@mixin grid-container($padding: 0, $max-width: 100%, $breakpoints: $default-breakpoints) {
+  width: 100%;
+  margin-right: auto;
+  margin-left: auto;
+  padding-right: $padding;
+  padding-left: $padding;
+  max-width: $max-width;
+
+  @each $breakpoint in map-keys($breakpoints) {
+    $container-breakpoint: map-get($breakpoints, $breakpoint);
+    @media (min-width: $container-breakpoint) {
+      max-width: $container-breakpoint - (2 * $padding);
+    }
+  }
+}
+
+//The grid-container mixin takes three optional arguments:
+
+// $padding: The amount of padding to apply to the left and right sides of the container. 
+//Default value is 0.
+// $max-width: The maximum width of the container. Default value is 100%.
+// $breakpoints: A map of breakpoints and their values. Default value is 
+//$default-breakpoints.
+// The mixin sets the width of the container to 100% and centers it on the page 
+//using auto margins. It also sets the padding on the left and right sides of the 
+//container using the $padding argument, and sets the maximum width of the container using the $max-width argument.
+
+// The mixin includes a loop that generates media queries for each breakpoint in the $breakpoints map. For each breakpoint,
+// it sets the max-width of the container to the value of the breakpoint minus twice the padding value, to account for the padding on both sides of the container.
+
+@mixin grid-col-offset($breakpoint, $columns) {
+  @if $columns == 0 {
+    margin-left: 0;
+  } @else {
+    margin-left: ($columns / $grid-columns) * 100%;
+  }
+}
+
+// usage 
+// @include grid-col-offset(md, 2);
+// This would generate CSS that applies a left margin equivalent 
+// to two grid columns at the medium breakpoint
+
+@mixin grid-col-auto($breakpoint) {
+  @media (min-width: map-get($default-breakpoints, $breakpoint)) {
+    flex: 0 0 auto;
+    max-width: none;
+  }
+}
+
+// usage
+// .my-column {
+//   @include grid-col-auto(md);
+// }
+// This will set the properties for the .my-column class at the medium breakpoint. You can replace md with 
+// the breakpoint name you want to use

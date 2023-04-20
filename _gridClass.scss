@@ -1,0 +1,97 @@
+@import './grid';
+
+// Variables
+$grid-columns: 12;
+$grid-gutter-width: 30px;
+$grid-breakpoints: (
+  xs: 0,
+  sm: 576px,
+  md: 768px,
+  lg: 992px,
+  xl: 1200px
+);
+
+// Grid classes
+.grid {
+  // Containers
+  &__container {
+    @include grid-container;
+  }
+
+  // Rows
+  &__row {
+    @include grid-row;
+  }
+
+  @each $breakpoint, $breakpoint-value in $grid-breakpoints {
+    @media (min-width: $breakpoint-value) {
+      // Containers
+      &__container--#{$breakpoint} {
+        @include grid-container();
+      }
+
+      // Rows
+      &__row--#{$breakpoint} {
+        @include grid-row;
+      }
+
+      &__row--reverse-#{$breakpoint} {
+        flex-direction: row-reverse;
+      }
+
+      // Column offsets
+      @for $i from 1 through ($grid-columns - 1) {
+        &__col-#{$breakpoint}-offset-#{$i} {
+          @include grid-col-offset($i, $grid-columns);
+        }
+      }
+
+      // Auto width columns
+      &__col-#{$breakpoint}-auto {
+        @include grid-col-auto($breakpoint);
+      }
+
+      // Visibility classes
+      &__visible-#{$breakpoint} {
+        display: block;
+      }
+
+      &__hidden-#{$breakpoint} {
+        display: none;
+      }
+
+      // Align-items classes
+      &__align-items-top-#{$breakpoint} {
+        align-items: flex-start;
+      }
+
+      &__align-items-middle-#{$breakpoint} {
+        align-items: center;
+      }
+
+      &__align-items-bottom-#{$breakpoint} {
+        align-items: flex-end;
+      }
+
+      // Align-self classes
+      &__align-self-top-#{$breakpoint} {
+        align-self: flex-start;
+      }
+
+      &__align-self-middle-#{$breakpoint} {
+        align-self: center;
+      }
+
+      &__align-self-bottom-#{$breakpoint} {
+        align-self: flex-end;
+      }
+
+      // Columns
+      @for $i from 1 through $grid-columns {
+        &__col-#{$i} {
+          @include grid-col($i);
+        }
+      }
+    }
+  }
+}

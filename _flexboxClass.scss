@@ -1,0 +1,165 @@
+@import "./flexbox";
+
+// Variables
+$flexbox-breakpoints: (
+  xs: 0,
+  sm: 576px,
+  md: 768px,
+  lg: 992px,
+  xl: 1200px,
+);
+
+// Flexbox classes
+.flex {
+  // Containers
+  &__container {
+    @include flex-container(row, space-between, center, wrap);
+  }
+
+  // Rows
+&__row {
+  @include flex-row;
+}
+
+
+@each $breakpoint, $breakpoint-value in $flexbox-breakpoints {
+  @media (min-width: $breakpoint-value) {
+    // Containers
+    &__container--#{$breakpoint} {
+      @include flex-container;
+    }
+
+    // Rows
+    &__row--#{$breakpoint} {
+      @include flex-row;
+    }
+
+    &__row--reverse-#{$breakpoint} {
+      flex-direction: row-reverse;
+    }
+
+    // Auto width columns
+    &__col-#{$breakpoint}-auto {
+      @include flex-col-auto;
+    }
+
+    // Visibility classes
+    &__visible-#{$breakpoint} {
+      display: block;
+    }
+
+    &__hidden-#{$breakpoint} {
+      display: none;
+    }
+
+    // Align-items classes
+    &__align-items-top-#{$breakpoint} {
+      align-items: flex-start;
+    }
+
+    &__align-items-middle-#{$breakpoint} {
+      align-items: center;
+    }
+
+    &__align-items-bottom-#{$breakpoint} {
+      align-items: flex-end;
+    }
+
+    // Align-self classes
+    &__align-self-top-#{$breakpoint} {
+      align-self: flex-start;
+    }
+
+    &__align-self-middle-#{$breakpoint} {
+      align-self: center;
+    }
+
+    &__align-self-bottom-#{$breakpoint} {
+      align-self: flex-end;
+    }
+  }
+}
+
+}
+
+
+
+
+/* Flexbox BEM classes */
+.flex {
+  &__center {
+    @include flex();
+  }
+
+  &__start {
+    @include flex(start);
+  }
+
+  &__end {
+    @include flex(end);
+  }
+
+  &__row {
+    @include flex-row();
+  }
+
+  &__row-space-between-center {
+    @include flex-row(space-between, center);
+  }
+
+  &__col {
+    @include flex-col();
+  }
+
+  &__col-start-center {
+    @include flex-col(flex-start, center);
+  }
+
+  &__middle {
+    @include flexMiddle;
+  }
+
+  &__horizontal-justify {
+    @include flexHorizontalJustify();
+  }
+
+  &__horizontal-justify-wrap {
+    @include flexHorizontalJustify(wrap);
+  }
+
+  &__center-content {
+    @include flexCenterContent();
+  }
+
+  &__center-content-wrap {
+    @include flexCenterContent(wrap);
+  }
+
+  &__left-top {
+    @include flexLeftTop;
+  }
+
+  &__left-middle {
+    @include flexLeftMiddle;
+  }
+
+  &__right-middle {
+    @include flexRightMiddle;
+  }
+
+  &__order-1 {
+    @include flex-order(1);
+  }
+
+  &__order-2 {
+    @include flex-order(2);
+  }
+
+  &__order-3 {
+    @include flex-order(3);
+  }
+
+  &__vertical-align {
+    @include vertical-align;
+  }
+}
